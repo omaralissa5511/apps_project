@@ -32,19 +32,27 @@ Route::middleware('jwt.verify')->group(function (){
     Route::post('/create_group',[GroupController::class,'create_group']);
     Route::get('/get_all_groups',[GroupController::class,'getAllGroups']);
     Route::delete('/delete_group/{id}',[GroupController::class,'deleteGroup']);
+    Route::post('/addUserToGroup/{groupID}/{userID}',[GroupController::class,'addUserToGroup']);
+
     #################  END    ################
 
     ####################   FILES ROUTES   ##########
     Route::get('/reserveFile/{id}',[FileController::class,'reserveFile']);
     Route::get('/cancelReservation/{id}',[FileController::class,'cancelReservation']);
     Route::post('check_in/{id}',[FileController::class,'check_in']);
-    Route::post('check_out/{id}',[FileController::class,'check_out']);
+    Route::post('check_in_m',[FileController::class,'check_in_m']);
+    Route::post('check_out/',[FileController::class,'check_out']);
     Route::get('get_groupFile/{id}',[FileController::class,'get_groupFile']);
+    Route::get('getFileRecord/{id}',[FileController::class,'getFileRecord']);
+
 
     ###################   END    ###############
 
     Route::get('getUsers',[UserController::class,'getUsers']);
     Route::get('test/{id}',[FileController::class,'test']);
+
+
+
 
 });
 

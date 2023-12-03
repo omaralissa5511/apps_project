@@ -44,9 +44,9 @@ return [
             'throw' => false,
         ],
 
-        'images' => [
+        'group' => [
             'driver' => 'local',
-            'root' =>base_path() . 'public/storage/product/images/',
+            'root' =>base_path() . 'public/storage/group/',
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,

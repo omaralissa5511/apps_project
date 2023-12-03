@@ -46,7 +46,7 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:6',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400000);
+            return response()->json($validator->errors()->toJson(), 400);
         }
         $imagePath = $request->file('image')->store('group_images', 'public');
 
