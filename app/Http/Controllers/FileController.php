@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Cache;
 class FileController extends Controller
 {
 
-
     public function getFileRecord ($file_id) {
 
         $record = Record::where('file_id',$file_id)->get();
@@ -228,8 +227,9 @@ class FileController extends Controller
         if($file->status!=0) {
             return response()->json(['message' => 'the file is  available']);
         }
-        $user_id = Record::where('file_id','=',$ID)->first()->user_id;
+        $user = Record::where('file_id','=',$ID)->latest()->first();
 
+       $user_id = $user ->user_id;
         if($USER==$user_id){
             $file->status = 1;
             $file->save();
