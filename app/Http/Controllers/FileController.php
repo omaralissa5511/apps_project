@@ -12,10 +12,35 @@ use Illuminate\Support\Facades\Cache;
 class FileController extends Controller
 {
 
-    public function getFileRecord ($file_id) {
+    public function getFileRecord ($file_id,$userID) {
 
-        $record = Record::where('file_id',$file_id)->get();
-        return $record;
+        $record = Record::where('file_id',$file_id)->where('user_id',$userID)->get();
+
+        if(count($record) != 0) {
+                 return $record;
+        }else {
+            return response()->json(['message'=>' U do not have access on this file']);
+        }
+    }
+
+
+    public function addFile (Request $request){
+
+        $status = $request->status;
+        $name = $request->name;
+        $group_id = $request->groupID;
+        $user_id = $request->userID;
+
+        $file = File::create([
+            'name' => $name,
+            'status' => $status,
+            'group_id' => $group_id,
+            'user_id' => $user_id
+        ]);
+
+        if($file) {
+            return "yep";
+        }
     }
 
 
@@ -125,6 +150,7 @@ class FileController extends Controller
     public function get_groupFile ($id) {
 
         $r = File::where('group_id','=',$id)->first();
+
         if($r){
             $files = File::where('group_id','=',$id)->get();
             return $files;
@@ -244,6 +270,11 @@ class FileController extends Controller
             return response()->json(['message' => 'you can not free the file']);
         }
 
+    }
+
+    public function getfile(){
+
+       return File::all();
     }
 
 

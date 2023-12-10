@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\User_Group;
 use Illuminate\Http\Request;
@@ -13,30 +14,120 @@ use Illuminate\Support\Facades\Storage;
 
 class GroupController extends Controller
 {
-    public function create_group(Request $request){
 
+
+    public function joinOrder (Request $request) {
+
+        $group_id = $request->groupID;
+        $user_id = $request->userID;
+
+        $o = Order::where('user_id', $user_id)->Where('group_id', $group_id)->first();
+
+         if($o){
+             return response()->json(['message' => 'you already ask to join']);
+         }
+         else{
+             $order = Order::create([
+
+                 'user_id' => $user_id,
+                 'group_id' => $group_id,
+                 'status' => 'pending'
+             ]);
+             return response()->json(['message' => 'your order has waiting to approve']);
+         }
+
+    }
+
+    public function approvePendingOrder(Request $request){
+
+        $orderID =  $request->orderID;
+        $orderStatus =  $request->orderID;
+
+        $order = Order::where('id',$orderID)->first();
+        $userId = Order::where('id',$orderID)->first()->user_id;
+        $groupId = Order::where('id',$orderID)->first()->group_id;
+
+        if($order){
+            $order -> status = "accepted";
+            $order->save();
+
+            User_Group::create([
+                 'group_id'=>$groupId,
+                 'user_id'=>$userId
+            ]);
+        }
+
+    }
+
+
+    public function getPendingOrder ($groupID){
+        $order = Order::where('status','pending')->where('group_id',$groupID)
+            ->get();
+        if($order) {
+            return $order;
+        }else {
+            return response()->json(['no pending orders']);
+        }
+
+    }
+
+    public function create_group(Request $request)
+    {
+
+        $user_id = $request -> admin;
+
+        $admin = User::where('id',$user_id)->first()->name;
 
         $request->validate([
             'name' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp,jpg_large,gif|max:2048',
         ]);
 
         $imagePath = $request->file('image')->store('group', 'public');
 
         $group = Group::create([
             'name' => $request->input('name'),
+            'admin' => $admin,
             'image' => $imagePath,
         ]);
 
-        return response()->json(['message' => 'Group created successfully', 'group' => $group]);
+        $group_id = $group->id;
+
+
+        User_Group::create([
+            'group_id' => $group_id,
+            'user_id' => $user_id
+        ]);
+
+        if ($group) {
+            return response()->json(['message' => 'Group created successfully', 'group' => $group]);
+        }
+        else {
+            return response()->json(['message' => 'we got a some shit']);
+        }
     }
 
 
-    public function getAllGroups(){
-        $group=Group::all();
-        if($group)
+    public function getAllGroups($userid){
+
+        $group_ids=User_Group::where('user_id',$userid)->get()->pluck('group_id');
+
+        $group = Group::find($group_ids);
+            return $group;
+
+
+    }
+
+    public function get_AllGroups(){
+
+        $group = Group::get();
+        if($group){
             return response()->json($group);
-        return response()->json("failed");
+        }else {
+            return response()->json(['message'=>'no groups']);
+        }
+
+
 
     }
 

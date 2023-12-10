@@ -54,6 +54,7 @@ class AuthController extends Controller
             'name'=>  $request->input('name'),
             'password' => bcrypt($request->input('password')),
             'email' =>  $request->input('email'),
+            'role' => 0,
             'image' => $imagePath
         ]);
 
