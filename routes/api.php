@@ -30,28 +30,25 @@ Route::middleware('jwt.verify')->group(function (){
 
     ################# GROUP ROUTES ##############
     Route::post('/create_group',[GroupController::class,'create_group']);
-    Route::post('/joinOrder',[GroupController::class,'joinOrder']);
-    Route::get('/getPendingOrder/{groupID}',[GroupController::class,'getPendingOrder']);
-    Route::post('/approvePendingOrder',[GroupController::class,'approvePendingOrder']);
-    Route::get('/get_all_groups/{id}',[GroupController::class,'getAllGroups']);
-    Route::get('/get_AllGroups',[GroupController::class,'get_AllGroups']);
-    Route::delete('/delete_group/{userid}',[GroupController::class,'deleteGroup']);
+    Route::get('/get_all_groups',[GroupController::class,'getAllGroups']);
+    Route::delete('/delete_group/{id}',[GroupController::class,'deleteGroup']);
     Route::post('/addUserToGroup/{groupID}/{userID}',[GroupController::class,'addUserToGroup']);
+
     #################  END    ################
 
     ####################   FILES ROUTES   ##########
-    Route::post('/addFile',[FileController::class,'addFile']);
+    Route::get('/reserveFile/{id}',[FileController::class,'reserveFile']);
     Route::get('/cancelReservation/{id}',[FileController::class,'cancelReservation']);
     Route::post('check_in/{id}',[FileController::class,'check_in']);
     Route::post('check_in_m',[FileController::class,'check_in_m']);
     Route::post('check_out/',[FileController::class,'check_out']);
     Route::get('get_groupFile/{id}',[FileController::class,'get_groupFile']);
-    Route::get('getFileRecord/{id}/{userID}',[FileController::class,'getFileRecord']);
+    Route::get('getFileRecord/{id}',[FileController::class,'getFileRecord']);
 
 
     ###################   END    ###############
 
-    Route::get('getUsers/{group_id}',[UserController::class,'getUsers']);
+    Route::get('getUsers',[UserController::class,'getUsers']);
     Route::get('test/{id}',[FileController::class,'test']);
 
 
@@ -59,5 +56,5 @@ Route::middleware('jwt.verify')->group(function (){
 
 });
 
-Route::get('get',[FileController::class,'getfile']);
+
 
