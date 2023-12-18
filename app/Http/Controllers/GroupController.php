@@ -16,6 +16,17 @@ class GroupController extends Controller
 {
 
 
+    public function get_Group_Users ($groupID) {
+
+        $usersID = User_Group::where('group_id',$groupID)->get()->pluck('user_id');
+
+        $users = User::find($usersID);
+        return $users;
+
+    }
+
+
+
     public function joinOrder (Request $request) {
 
         $group_id = $request->groupID;
@@ -122,9 +133,14 @@ class GroupController extends Controller
         $group_ids=User_Group::where('user_id',$userid)->get()->pluck('group_id');
 
         $group = Group::find($group_ids);
+<<<<<<< HEAD
         Log::channel('mysql')->info('Get all Groups for user '.$userid ,[$userid]);
 
         return $group;
+=======
+
+            return $group;
+>>>>>>> ec8893ccf4cab09cfc37c5df816d073d14eba8e9
 
 
     }
