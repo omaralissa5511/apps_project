@@ -3,12 +3,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-<<<<<<< HEAD
 
 use Illuminate\Support\Facades\Log;
-=======
+
 use App\Models\MUser;
->>>>>>> ec8893ccf4cab09cfc37c5df816d073d14eba8e9
 use Validator;
 
 class AuthController extends Controller

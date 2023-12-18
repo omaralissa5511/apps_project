@@ -30,10 +30,9 @@ Route::middleware('jwt.verify')->group(function (){
 
     ################# GROUP ROUTES ##############
     Route::post('/create_group',[GroupController::class,'create_group']);
-<<<<<<< HEAD
+
     Route::get('/get_all_groups',[GroupController::class,'getAllGroups']);
     Route::delete('/delete_group/{id}',[GroupController::class,'deleteGroup']);
-=======
     Route::post('/joinOrder',[GroupController::class,'joinOrder']);
     Route::get('/getPendingOrder/{groupID}',[GroupController::class,'getPendingOrder']);
     Route::post('/approvePendingOrder',[GroupController::class,'approvePendingOrder']);
@@ -41,7 +40,6 @@ Route::middleware('jwt.verify')->group(function (){
     Route::get('/get_AllGroups',[GroupController::class,'get_AllGroups']);
     Route::get('/get_Group_Users/{groupID}',[GroupController::class,'get_Group_Users']);
     Route::delete('/delete_group/{userid}',[GroupController::class,'deleteGroup']);
->>>>>>> ec8893ccf4cab09cfc37c5df816d073d14eba8e9
     Route::post('/addUserToGroup/{groupID}/{userID}',[GroupController::class,'addUserToGroup']);
 
     #################  END    ################

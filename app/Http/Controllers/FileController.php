@@ -8,6 +8,7 @@ use App\Models\Record;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use ITelmenko\Logger\Laravel\Models\Log;
 
 class FileController extends Controller
 {
@@ -17,9 +18,10 @@ class FileController extends Controller
         $record = Record::where('file_id',$file_id)->where('user_id',$userID)->get();
 
         if(count($record) != 0) {
-
+            Log::channel('mysql')->info('Get all Records for user '.$userID ,[$userID]);
                  return $record;
         }else {
+            Log::channel('mysql')->info($userID." don't have access on the file ". $file_id,[$userID]);
             return response()->json(['message'=>' U do not have access on this file']);
         }
     }
@@ -40,6 +42,7 @@ class FileController extends Controller
         ]);
 
         if($file) {
+            Log::channel('mysql')->info($user_id .'added file'.$name  ,[$user_id]);
             return "yep";
         }
     }
@@ -75,12 +78,13 @@ class FileController extends Controller
                 finally {
                     $lock->release();
                 }
-                return
-                    response()->json(['message' => 'File updated successfully']);
+                Log::channel('mysql')->info('Check in file '.$file. 'by' .$userID ,[$userID]);
+                return response()->json(['message' => 'File updated successfully']);
             }
         }
 
         else {
+            Log::channel('mysql')->info('Unable to acquire the file lock '.$fileId ,[Auth::id()]);
             return response()->json(['message' => 'Unable to acquire the file lock. Try again later.'], 403);
         }
     }
@@ -93,6 +97,7 @@ class FileController extends Controller
 
         $r = File::where('group_id','=',$id)->first();
 
+        Log::channel('mysql')->info('Get all files in group ');
         if($r){
             $files = File::where('group_id','=',$id)->get();
             return $files;
@@ -114,6 +119,7 @@ class FileController extends Controller
 
         foreach ($IDS as $id) {
             if (!File::find($id)) {
+
                 return response()->json(['message' => 'One or more files do not exist.'], 404);
             }
         }
