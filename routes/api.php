@@ -35,6 +35,7 @@ Route::middleware('jwt.verify')->group(function (){
     Route::post('/approvePendingOrder',[GroupController::class,'approvePendingOrder']);
     Route::get('/get_all_groups/{id}',[GroupController::class,'getAllGroups']);
     Route::get('/get_AllGroups',[GroupController::class,'get_AllGroups']);
+    Route::get('/get_Group_Users/{groupID}',[GroupController::class,'get_Group_Users']);
     Route::delete('/delete_group/{userid}',[GroupController::class,'deleteGroup']);
     Route::post('/addUserToGroup/{groupID}/{userID}',[GroupController::class,'addUserToGroup']);
     #################  END    ################

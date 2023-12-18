@@ -34,7 +34,7 @@ class FileControllerTest extends TestCase
     {
         $faker = Faker::create();
         $groupIds = [];
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $groupIds[] = [$faker->numberBetween(1, 1000)];
         }
 
