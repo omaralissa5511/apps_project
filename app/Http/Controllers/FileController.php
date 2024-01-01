@@ -272,10 +272,71 @@ class FileController extends Controller
 
     }
 
-    public function getfile(){
+    public function getfile($rr){
 
-       return File::all();
+
+       $file =  File::where('id',$rr)->first(); return $file;
     }
+
+    public function check_in_mtest($IDS) {
+
+      //  $data = json_decode($request->getContent(), true);
+//
+//        if (!isset($data['Ids']) || !is_array($data['Ids'])) {
+//            return response()->json(['message' => 'Invalid input.'], 400);
+//        }
+//
+//        $IDS = $data['Ids'];
+//
+//        foreach ($IDS as $id) {
+//            if (!File::find($id)) {
+//                return response()->json(['message' => 'One or more files do not exist.'], 404);
+//            }
+//        }
+
+        $file = File::find($IDS);
+
+
+            if ($file->status == 0) {
+                return response()->json(['message' => "File is already reserved."], 403);
+            }
+
+
+
+            if ($file->status != 0) {
+                $lockKey = "file_lock_{$file->id}";
+
+                $lock = Cache::lock($lockKey, 30);
+                $lockAcquired = $lock->get();
+
+                if ($lockAcquired) {
+                    try {
+                        $file->status = 0;
+                        $file->save();
+
+                        $userID = Auth::id();
+                        Record::query()->create([
+                            'user_id' => $userID,
+                            'file_id' => $file->id,
+                            'type' => 'Check-IN'
+                        ]);
+                    } finally {
+                        $lock->release();
+                    }
+                } else {
+                    // في حالة فشل الحصول على قفل الملف
+                    return response()->json(['message' => "Unable to acquire the file lock for file {$file->id}. Try again later."], 403);
+                }
+            } else {
+                // في حالة أن الملف محجوز بالفعل
+                return response()->json(['message' => "File {$file->id} is already reserved."], 403);
+            }
+
+
+        return response()->json(['message' => 'Files updated successfully']);
+    }
+
+
 
 
 }

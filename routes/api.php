@@ -3,6 +3,7 @@
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\UserController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -33,10 +34,11 @@ Route::middleware('jwt.verify')->group(function (){
     Route::post('/joinOrder',[GroupController::class,'joinOrder']);
     Route::get('/getPendingOrder/{groupID}',[GroupController::class,'getPendingOrder']);
     Route::post('/approvePendingOrder',[GroupController::class,'approvePendingOrder']);
+    Route::post('/declinePendingOrder',[GroupController::class,'declinePendingOrder']);
     Route::get('/get_all_groups/{id}',[GroupController::class,'getAllGroups']);
     Route::get('/get_AllGroups',[GroupController::class,'get_AllGroups']);
     Route::get('/get_Group_Users/{groupID}',[GroupController::class,'get_Group_Users']);
-    Route::delete('/delete_group/{userid}',[GroupController::class,'deleteGroup']);
+    Route::delete('/deleteGroup/{Gid}/{userid}',[GroupController::class,'deleteGroup']);
     Route::post('/addUserToGroup/{groupID}/{userID}',[GroupController::class,'addUserToGroup']);
     #################  END    ################
 
@@ -48,17 +50,19 @@ Route::middleware('jwt.verify')->group(function (){
     Route::post('check_out/',[FileController::class,'check_out']);
     Route::get('get_groupFile/{id}',[FileController::class,'get_groupFile']);
     Route::get('getFileRecord/{id}/{userID}',[FileController::class,'getFileRecord']);
-
-
     ###################   END    ###############
+
+
+
+
 
     Route::get('getUsers/{group_id}',[UserController::class,'getUsers']);
     Route::get('test/{id}',[FileController::class,'test']);
-
+    Route::delete('deleteUser/{Did}/{id}/{GROUPID}',[UserController::class,'deleteUserFromGroup']);
 
 
 
 });
-
-Route::get('get',[FileController::class,'getfile']);
-
+// for test on jmeter
+Route::get('get/{rr}',[FileController::class,'getfile']);
+//Route::post('check_in_mTEST/{IDS}',[FileController::class,'check_in_mtest']);

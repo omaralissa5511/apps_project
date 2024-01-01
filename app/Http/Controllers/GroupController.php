@@ -32,6 +32,13 @@ class GroupController extends Controller
         $group_id = $request->groupID;
         $user_id = $request->userID;
 
+
+        $userGroup = User_Group::where('group_id',$group_id)->where('user_id',$user_id)->first();
+
+         if($userGroup) {
+             return response()->json(['message' => 'you already joined this group']);
+         }
+
         $o = Order::where('user_id', $user_id)->Where('group_id', $group_id)->first();
 
          if($o){
@@ -52,8 +59,6 @@ class GroupController extends Controller
     public function approvePendingOrder(Request $request){
 
         $orderID =  $request->orderID;
-        $orderStatus =  $request->orderID;
-
         $order = Order::where('id',$orderID)->first();
         $userId = Order::where('id',$orderID)->first()->user_id;
         $groupId = Order::where('id',$orderID)->first()->group_id;
@@ -71,7 +76,18 @@ class GroupController extends Controller
     }
 
 
+
+    public function declinePendingOrder(Request $request){
+
+        $orderID =  $request->orderID;
+        $order = Order::where('id',$orderID)->first();
+        $order -> delete();
+
+    }
+
+
     public function getPendingOrder ($groupID){
+
         $order = Order::where('status','pending')->where('group_id',$groupID)
             ->get();
         if($order) {
@@ -143,13 +159,20 @@ class GroupController extends Controller
 
     }
 
-    public function deleteGroup(Request $request){
-        $delete =Group::find($request->id);
-        if($delete) {
-            $delete->delete();
-            return response()->json("delete group successfully");
-        }
-        return response()->json("failed");
+    public function deleteGroup($GID , $UID){
+
+        $group_Admin =Group::where('id',$GID)->first()->admin;
+
+         $userID_OwnerGruop = User::where('name',$group_Admin)->first()->id;
+
+         if($UID == $userID_OwnerGruop){
+             $group = Group::find($GID);
+             $group->delete();
+             return response()->json("GROUP DELETED SUCCESSFULLY");
+         }
+         else{
+              return response()->json("U R NOT THE OWNER OF THE GROUP");
+         }
     }
 
 
@@ -178,7 +201,7 @@ class GroupController extends Controller
     }
 
 
-    public function deleteUserFromGroup(Request $request)
+    public function delete_User_From_Group(Request $request)
     {
         $group = Group::find($request->gid);
         if ($group && Auth::id() == $group->admin_id) {

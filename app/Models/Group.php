@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Group extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql-2';
     protected $fillable=['name','image','admin','created_at'];
     protected $table='groups';
 

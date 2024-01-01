@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Record extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql-2';
     protected $fillable=['type','user_id','file_id'];
     protected $table = 'records';
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class File extends Model
 {
     use HasFactory;
+    protected $connection = 'mysql-2';
     protected $fillable=['name','status','group_id','user_id','created_at','updated_at'];
 
     protected $guarded = [];
