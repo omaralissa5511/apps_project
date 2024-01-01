@@ -117,6 +117,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+        'mysql' => [
+            'driver' => 'custom',
+            'via' => ITelmenko\Logger\Laravel\Logging\MySQLLogger::class,
+            'connection' => env('DB_LOG_CONNECTION'),
+            'table' => env('DB_LOG_TABLE'),
+            'name' => 'my.channel' // optional
+        ],
     ],
 
 ];

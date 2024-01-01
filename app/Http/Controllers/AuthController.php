@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+
+use Illuminate\Support\Facades\Log;
+
 use App\Models\MUser;
 use Validator;
 
@@ -27,9 +30,11 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
+            Log::channel('mysql')->info('User failed to login.');
             return response()->json($validator->errors(), 422);
         }
         if (! $token = auth()->attempt($validator->validated())) {
+            Log::channel('mysql')->info('User failed to login.');
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->createNewToken($token);
@@ -47,6 +52,7 @@ class AuthController extends Controller
             'password' => 'required|string|confirmed|min:6',
         ]);
         if($validator->fails()){
+            Log::channel('mysql')->error('error ,created an account');
             return response()->json($validator->errors()->toJson(), 400);
         }
         $imagePath = $request->file('image')->store('group_images', 'public');
@@ -58,7 +64,7 @@ class AuthController extends Controller
             'role' => 0,
             'image' => $imagePath
         ]);
-
+        Log::channel('mysql')->info($request->input('name').' created an account',[$request->name]);
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
@@ -98,7 +104,9 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     protected function createNewToken($token){
+        Log::channel('mysql')->info('user successfully to login',[auth()->user()->name]);
         return response()->json([
+
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60,

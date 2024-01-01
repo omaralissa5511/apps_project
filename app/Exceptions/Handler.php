@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use ITelmenko\Logger\Laravel\Exceptions\MysqlLoggerInsertException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -44,7 +45,12 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            //
+            if ($this->shouldReport($e) && app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
+            if ($e instanceof MysqlLoggerInsertException) {
+                return false; // prevent looping
+            }
         });
     }
 }

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\User_Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,6 +43,7 @@ class GroupController extends Controller
         $o = Order::where('user_id', $user_id)->Where('group_id', $group_id)->first();
 
          if($o){
+             Log::channel('mysql')->info('User '. $user_id .' ask to join to group '.$group_id.'but he already ask to join',[$user_id]);
              return response()->json(['message' => 'you already ask to join']);
          }
          else{
@@ -51,6 +53,7 @@ class GroupController extends Controller
                  'group_id' => $group_id,
                  'status' => 'pending'
              ]);
+             Log::channel('mysql')->info('User '.$user_id.' ask to join to group '.$group_id,[$user_id]);
              return response()->json(['message' => 'your order has waiting to approve']);
          }
 
@@ -71,6 +74,7 @@ class GroupController extends Controller
                  'group_id'=>$groupId,
                  'user_id'=>$userId
             ]);
+            Log::channel('mysql')->info('User '.$userId .'accepted into the group '.$groupId ,[$userId]);
         }
 
     }
@@ -90,6 +94,8 @@ class GroupController extends Controller
 
         $order = Order::where('status','pending')->where('group_id',$groupID)
             ->get();
+        Log::channel('mysql')->info('Get all orders to join to the group '.$groupID);
+
         if($order) {
             return $order;
         }else {
@@ -127,9 +133,13 @@ class GroupController extends Controller
         ]);
 
         if ($group) {
+            Log::channel('mysql')->info('Group '.$group_id.' created successfully by '.$user_id,[$user_id]);
+
             return response()->json(['message' => 'Group created successfully', 'group' => $group]);
         }
         else {
+            Log::channel('mysql')->info('Group '.$group_id.' failed to created by '.$user_id,[$user_id]);
+
             return response()->json(['message' => 'we got a some shit']);
         }
     }
@@ -140,40 +150,51 @@ class GroupController extends Controller
         $group_ids=User_Group::where('user_id',$userid)->get()->pluck('group_id');
 
         $group = Group::find($group_ids);
+        Log::channel('mysql')->info('Get all Groups for user '.$userid ,[$userid]);
 
-            return $group;
-
+        return $group;
 
     }
 
     public function get_AllGroups(){
 
         $group = Group::get();
+        Log::channel('mysql')->info('Get All Groups');
+
         if($group){
             return response()->json($group);
         }else {
             return response()->json(['message'=>'no groups']);
         }
-
-
-
     }
 
-    public function deleteGroup($GID , $UID){
+    public function deleteGroup($GID , $UID)
+    {
 
-        $group_Admin =Group::where('id',$GID)->first()->admin;
+        $group_Admin = Group::where('id', $GID)->first()->admin;
 
-         $userID_OwnerGruop = User::where('name',$group_Admin)->first()->id;
+        $userID_OwnerGruop = User::where('name', $group_Admin)->first()->id;
 
-         if($UID == $userID_OwnerGruop){
-             $group = Group::find($GID);
-             $group->delete();
-             return response()->json("GROUP DELETED SUCCESSFULLY");
-         }
-         else{
-              return response()->json("U R NOT THE OWNER OF THE GROUP");
-         }
+        if ($UID == $userID_OwnerGruop) {
+            $group = Group::find($GID);
+            $group->delete();
+            return response()->json("GROUP DELETED SUCCESSFULLY");
+        } else {
+            return response()->json("U R NOT THE OWNER OF THE GROUP");
+        }
     }
+
+//    public function deleteGroup(Request $request){
+//        $delete =Group::find($request->id);
+//        if($delete) {
+//            $delete->delete();
+//            Log::channel('mysql')->info('Group '.$delete.' deleted successfully by ');
+//
+//            return response()->json("delete group successfully");
+//        }
+//        return response()->json("failed");
+//
+//    }
 
 
     public function addUserToGroup($groupID,$userID)
@@ -199,6 +220,7 @@ class GroupController extends Controller
                   }
 
     }
+
 
 
     public function delete_User_From_Group(Request $request)
